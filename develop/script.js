@@ -16,11 +16,11 @@ function randomSym() {
     return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
-var randomFunctions = {
-    lowerC: randomLowerC(),
-    upperC: randomUpperC(),
-    num: randomNum(),
-    sym: randomSym()
+const randomFunctions = {
+    lower: randomLowerC,
+    upper: randomUpperC,
+    number: randomNum,
+    symbol: randomSym
 };
 
 var lengthOf = function() {
@@ -34,19 +34,47 @@ var lengthOf = function() {
     };
 };
 
-var generatePassword = function() {
+var generatePassword = function(length, lower, upper, number, symbol) {
+    let generatedPassword = '';
+    const typesCount = lower + upper + number + symbol;
+    console.log('typesCount: ' + typesCount);
+
+    const typesArr = [{ lower }, { upper }, { number }, { symbol }].filter(item => Object.values(item)[0]);
+    console.log(typesArr);
+
+    if(typesCount === 0) {
+        return '';
+    }
+    console.log(length);
+debugger;
+    for(let i = 0; i < length; i += typesCount) {
+        typesArr.forEach(type => {
+            const funcName = Object.keys(type)[0];
+            generatedPassword += randomFunctions[funcName]();
+        });
+    }
+
+    const finalPassword = generatedPassword.slice(0, length);
+    return finalPassword;
+};
+
+// Get references to the #generate element
+var generateBtn = document.querySelector("#generate");
+
+// Write password to the #password input
+function writePassword() {
     var lowerAsk = window.confirm("Would you like lowercase letters in your password?");
     //console.log(lowerAsk);
-
+    
     var upperAsk = window.confirm("Would you like uppercase letters in your password?");
     //console.log(upperAsk);
-
+    
     var numAsk = window.confirm("Would you like numbers in your password?");
     //console.log(numAsk);
-
+    
     var symAsk = window.confirm("would you like special characters in your password?");
     //console.log(symAsk);
-
+    
     var parameters = {
         length: lengthOf(),
         lower: lowerAsk,
@@ -55,17 +83,7 @@ var generatePassword = function() {
         symbol: symAsk
     };
 
-    console.log(parameters.length);
-};
-
-// Get references to the #generate element
-var generateBtn = document.querySelector("#generate");
-
-// Write password to the #password input
-function writePassword() {
-    window.alert("button was clicked");
-
-    var password = generatePassword();
+    var password = generatePassword(parameters.length, parameters.lower, parameters.upper, parameters.number, parameters.symbol);
     var passwordText = document.querySelector("#password");
 
     passwordText.value = password;
